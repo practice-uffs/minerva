@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TelegramController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,10 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/telegram/webhook', [TelegramController::class, 'index']);
+Route::get('/telegram/webhook/set', [TelegramController::class, 'setWebhook']);
+
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
