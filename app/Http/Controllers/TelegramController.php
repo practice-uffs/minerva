@@ -56,8 +56,8 @@ class TelegramController extends Controller
         $message = $payload['message'];
         $chatId = $message['chat']['id'];
         $text = $message['text'];
-        $username = $message['from']['username'];
-        $senderId = $message['from']['id'];
+        $username = @$message['from']['username'];
+        $senderId = @$message['from']['id'];
     }
 
     protected function debugMessage($payload)
