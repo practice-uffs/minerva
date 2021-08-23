@@ -24,7 +24,7 @@ class AuraNLP
 
     public function domain($text)
     {
-        $url = $this->config['api_url'] . '/qna/' . urlencode($text);
+        $url = $this->config['api_url'] . '/domain/' . rawurlencode($text);
         $response = $this->client->get($url);
 
         return json_decode($response->getBody()->getContents(), true);
@@ -32,7 +32,7 @@ class AuraNLP
 
     public function qna($text)
     {
-        $url = $this->config['api_url'] . '/qna/' . urlencode($text);
+        $url = $this->config['api_url'] . '/qna/' . rawurlencode($text);
         $response = $this->client->get($url);
 
         return json_decode($response->getBody()->getContents(), true);

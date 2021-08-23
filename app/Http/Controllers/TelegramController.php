@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AuraNLP;
 use App\Services\Telegram;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TelegramController extends Controller
 {
@@ -19,13 +20,13 @@ class TelegramController extends Controller
 
     public function index(Request $request)
     {
-        //$payload = $this->telegram->setRequest($request);
+        $payload = $this->telegram->setRequest($request);
 
-        $this->processAuraText(null);
-        
         try {
             $text = $payload['message']['text'];
             $chatId = $payload['message']['chat']['id'];
+
+            $this->saveInteraction($payload);
 
             $response = null;
 
@@ -39,8 +40,17 @@ class TelegramController extends Controller
             return $response;
 
         } catch (\Exception $e) {
-            return $this->telegram->sendMessage($chatId, $e->getMessage());
+            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getMessage(). '`');
         }
+    }
+
+    protected function saveInteraction($payload)
+    {
+        $message = $payload['message'];
+        $chatId = $message['chat']['id'];
+        $text = $message['text'];
+        $username = $message['from']['username'];
+        $senderId = $message['from']['id'];
     }
 
     protected function debugMessage($payload)
@@ -51,20 +61,66 @@ class TelegramController extends Controller
 
     protected function processAuraText($payload)
     {
-        $response = $this->auraNLP->qna('oi');
-        dd($response);
+        $text = $payload['message']['text'];
 
+        if (stripos($text, '/domain') !== false) {
+            return $this->processAuraTextDomain($payload);
+
+        } else {
+            return $this->processAuraTextQna($payload);
+        }
+    }
+
+    protected function processAuraTextQna($payload)
+    {
         $message = $payload['message'];
-
         $chatId = $message['chat']['id'];
         $text = $message['text'];
-        $username = $message['from']['username'];
-        $senderId = $message['from']['id'];        
         
         $response = $this->auraNLP->qna($text);
+        Log::info($response);
 
-        return $this->telegram->sendMessage($chatId, print_r($response));
-    }
+        $reply = 'Não entendi, mas você pode me informar outra coisa.';
+
+        if (!empty($response['answer'])) {
+            $reply = $response['answer'];
+        }
+
+        $debug = stripos($text, '/debug') !== false;
+
+        if ($debug) {
+            $reply .= "\n `" . print_r(array_merge($response['entities'], $response['classifications']), true) . '`';
+        }
+
+        return $this->telegram->sendMessage($chatId, $reply);
+    }    
+
+    protected function processAuraTextDomain($payload)
+    {
+        $message = $payload['message'];
+        $chatId = $message['chat']['id'];
+        $text = $message['text'];
+        
+        $response = $this->auraNLP->domain($text);
+        
+        $intent = $response['intent'];
+        $entities = $response['entities'];
+        $sentiment = $response['sentiment']['vote'];
+
+        $reply = [
+            'intent' => $intent,
+            'entities' => $entities,
+            'sentiment' => $sentiment,
+        ];
+
+        $debug = stripos($text, '/debug') !== false;
+
+        if ($debug) {
+            $reply .= "\n `" . print_r(array_merge($response['entities'], $response['classifications']), true) . '`';
+        }
+
+        return $this->telegram->sendMessage($chatId, '`' . print_r($reply, true) . '`');
+    }       
 
     public function setWebhook()
     {

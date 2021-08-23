@@ -43,7 +43,7 @@ class Telegram
                 'chat_id' => $chatId,
                 'text' => $text,
                 'reply_to_message_id' => $replyToMessageId,
-                'format' => 'markdown'
+                'parse_mode' => 'markdown'
             ],
         ]);
     }
@@ -55,7 +55,7 @@ class Telegram
                 'chat_id' => $chatId,
                 'photo' => $photo,
                 'reply_to_message_id' => $replyToMessageId,
-                'format' => 'markdown'
+                'parse_mode' => 'markdown'
             ],
         ]);
     }
