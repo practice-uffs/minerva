@@ -53,11 +53,15 @@ class TelegramController extends Controller
 
     protected function saveInteraction($payload)
     {
-        $message = $payload['message'];
-        $chatId = $message['chat']['id'];
-        $text = $message['text'];
-        $username = @$message['from']['username'];
-        $senderId = @$message['from']['id'];
+        try {
+            $message = $payload['message'];
+            $chatId = $message['chat']['id'];
+            $text = $message['text'];
+            $username = @$message['from']['username'];
+            $senderId = @$message['from']['id'];
+        } catch (\Exception $e) {
+            
+        } 
     }
 
     protected function debugMessage($payload)
