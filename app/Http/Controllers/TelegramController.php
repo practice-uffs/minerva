@@ -40,7 +40,7 @@ class TelegramController extends Controller
             return $response;
 
         } catch (\Exception $e) {
-            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getTraceAsString(). '`');
+            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getMessage() . ' ' . $e->getTraceAsString(). '`');
         }
     }
 
