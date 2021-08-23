@@ -21,10 +21,10 @@ class TelegramController extends Controller
     public function index(Request $request)
     {
         $payload = $this->telegram->setRequest($request);
+        $chatId = $payload['message']['chat']['id'];
 
         try {
             $text = $payload['message']['text'];
-            $chatId = $payload['message']['chat']['id'];
 
             $this->saveInteraction($payload);
 
@@ -40,7 +40,7 @@ class TelegramController extends Controller
             return $response;
 
         } catch (\Exception $e) {
-            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getMessage(). '`');
+            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getTraceAsString(). '`');
         }
     }
 
