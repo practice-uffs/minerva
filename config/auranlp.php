@@ -7,5 +7,5 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'api_url' => env('AURA_NLP_URL', 'http://localhost:3000/api'),
+    'api_url' => env('AURA_NLP_API_URL', 'http://localhost:3000/api'),
 ];
