@@ -85,7 +85,6 @@ class TelegramController extends Controller
         $text = $message['text'];
         
         $response = $this->auraNLP->qna($text);
-        Log::info($response);
 
         $reply = 'Não entendi, mas você pode me informar outra coisa.';
 
