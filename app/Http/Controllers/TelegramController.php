@@ -21,7 +21,7 @@ class TelegramController extends Controller
     public function index(Request $request)
     {
         Log::info($request->getContent());
-        
+
         $payload = $this->telegram->setRequest($request);
         
         try {
@@ -47,7 +47,7 @@ class TelegramController extends Controller
                 return;
             }
 
-            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getMessage() . ' ' . $e->getTraceAsString(). '`');
+            return $this->telegram->sendMessage($chatId, '☠️ Deu ruim: `' . $e->getMessage(). '`');
         }
     }
 
